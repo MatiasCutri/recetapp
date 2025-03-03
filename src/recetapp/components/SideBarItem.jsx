@@ -14,6 +14,11 @@ export const SideBarItem = ( {note} ) => {
                 : note.nombreReceta;
     }, [note.nombreReceta]);
 
+    const dateString = useMemo(() => {
+        const newDate = new Date(note.date);
+        return newDate.toLocaleString();
+    }, [note.date]);
+
     const onClickNote = () => {
         dispatch( setActiveNote(note) );
     }
@@ -24,9 +29,9 @@ export const SideBarItem = ( {note} ) => {
                 <ListItemIcon>
                     <TurnedInNot />
                 </ListItemIcon>
-                <Grid container>
+                <Grid container direction="column">
                     <ListItemText primary={ newTitle } />
-                    <ListItemText secondary={ note.body } />
+                    <ListItemText secondary={ dateString } />
                 </Grid>
             </ListItemButton>
         </ListItem>
