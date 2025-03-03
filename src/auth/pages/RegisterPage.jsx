@@ -15,9 +15,9 @@ const formData = {
 }
 
 const formValidations = {
-  email: [(value) => value.includes('@'), 'El correo debe de tener una @'],
-  password: [(value) => value.length >= 6, 'El password debe de tener más de 6 letras'],
   displayName: [(value) => value.length >= 1, 'El nombre es obligatorio'],
+  email: [(value) => value.includes('@'), 'El correo debe tener una @'],
+  password: [(value) => value.length >= 6, 'La contraseña debe tener al menos 6 caracteres'],
 }
 
 
@@ -26,11 +26,11 @@ export const RegisterPage = () => {
   const dispatch = useDispatch();
   const [formSubmitted, setformSubmitted] = useState(false);
 
-  const { status, errorMessage } = useSelector( state => state.auth);
+  const { status, errorMessage } = useSelector(state => state.auth);
   const isCheckingAuthentication = useMemo(() => status === 'checking', [status]);
   useEffect(() => {
-      dispatch(logout({}));
-    }, [])
+    dispatch(logout({}));
+  }, [])
 
   const { formState, displayName, email, password, onInputChange,
     isFormValid, displayNameValid, emailValid, passwordValid
@@ -60,8 +60,8 @@ export const RegisterPage = () => {
               name="displayName"
               value={displayName}
               onChange={onInputChange}
-              error={!!displayNameValid && formSubmitted}
-              helperText={displayNameValid}
+              error={formSubmitted && !!displayNameValid}
+              helperText={formSubmitted && displayNameValid}
             />
           </Grid>
 
@@ -74,8 +74,8 @@ export const RegisterPage = () => {
               name="email"
               value={email}
               onChange={onInputChange}
-              error={!!emailValid && formSubmitted}
-              helperText={emailValid}
+              error={formSubmitted && !!emailValid}
+              helperText={formSubmitted && emailValid}
             />
           </Grid>
 
@@ -88,14 +88,14 @@ export const RegisterPage = () => {
               name="password"
               value={password}
               onChange={onInputChange}
-              error={!!passwordValid && formSubmitted}
-              helperText={passwordValid}
+              error={formSubmitted && !!passwordValid}
+              helperText={formSubmitted && passwordValid}
             />
           </Grid>
 
           <Grid container spacing={2} sx={{ mb: 2, mt: 1 }}>
 
-            <Grid item xs={12} display={ !!errorMessage ? '' : 'none' }>
+            <Grid item xs={12} display={!!errorMessage ? '' : 'none'}>
               <Alert severity='error'>
                 {errorMessage}
               </Alert>
@@ -106,7 +106,9 @@ export const RegisterPage = () => {
                 disabled={isCheckingAuthentication}
                 type="submit"
                 variant='contained'
-                fullWidth>
+                fullWidth
+                sx={{ color: 'tertiary.main' }}
+              >
                 Crear cuenta
               </Button>
             </Grid>

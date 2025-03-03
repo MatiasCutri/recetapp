@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { Google } from '@mui/icons-material';
 import { AuthLayout } from '../layout/AuthLayout';
@@ -12,17 +13,29 @@ const formData = {
   password: ''
 }
 
+const formValidations = {
+  email: [(value) => value.includes('@'), 'El correo debe tener una @'],
+  password: [(value) => value.length >= 6, 'La contraseña debe tener al menos 6 caracteres'],
+}
+
+
 export const LoginPage = () => {
 
   const dispatch = useDispatch();
+  const [formSubmitted, setformSubmitted] = useState(false);
 
   const { status, errorMessage } = useSelector(state => state.auth)
   const isAuthenticating = useMemo(() => status === 'checking', [status]);
-  
-  const { email, password, onInputChange, formState } = useForm(formData);
+
+  const { email, password, onInputChange, formState, emailValid, passwordValid, isFormValid } = useForm(formData, formValidations);
 
   const onSubmit = (event) => {
     event.preventDefault();
+
+    setformSubmitted(true);
+
+    if (!isFormValid) return;
+
     dispatch(startLoginWithEmailPassword(formState));
   }
 
@@ -44,6 +57,8 @@ export const LoginPage = () => {
               name="email"
               value={email}
               onChange={onInputChange}
+              error={formSubmitted && !!emailValid}
+              helperText={formSubmitted && emailValid}
             />
           </Grid>
 
@@ -56,6 +71,8 @@ export const LoginPage = () => {
               name="password"
               value={password}
               onChange={onInputChange}
+              error={formSubmitted && !!passwordValid}
+              helperText={formSubmitted && passwordValid}
             />
           </Grid>
 
@@ -72,6 +89,7 @@ export const LoginPage = () => {
                 type="submit"
                 variant='contained'
                 fullWidth
+                sx={{ color: 'tertiary.main' }}
               >
                 Login
               </Button>
@@ -82,6 +100,7 @@ export const LoginPage = () => {
                 variant='contained'
                 fullWidth
                 onClick={onGoogleSignIn}
+                sx={{ color: 'tertiary.main' }}
               >
                 <Google />
                 <Typography sx={{ ml: 1 }}>Google</Typography>
